@@ -4,7 +4,7 @@
  * Created: 31.03.2019 12:47:10
  * Author : root
  */
-#define F_CPU 12000000UL // Clock Speed
+// #define F_CPU 16000000UL // Clock Speed
 #define BAUD 9600
 #define MYUBRR F_CPU / 16 / BAUD - 1
 

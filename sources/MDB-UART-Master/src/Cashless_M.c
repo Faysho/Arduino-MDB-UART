@@ -3,10 +3,10 @@
  *
  * Created: 18.05.2019 10:07:59
  *  Author: root
- */ 
-#define F_CPU 12000000UL // Clock Speed
+ */
+// #define F_CPU 16000000UL // Clock Speed
 #define BAUD 9600
-#define MYUBRR F_CPU/16/BAUD-1
+#define MYUBRR F_CPU / 16 / BAUD - 1
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -20,7 +20,6 @@
 #include "USART_M.h"
 #include "Cashless_M.h"
 
-
 void CashlessDeviceSetup(uint8_t index)
 {
 	uint8_t tmpstr[80];
@@ -28,7 +27,8 @@ void CashlessDeviceSetup(uint8_t index)
 	if (!index)
 	{
 		cmd[0] = 0x11;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x61;
 	}
@@ -39,19 +39,20 @@ void CashlessDeviceSetup(uint8_t index)
 	cmd[5] = VMCData.VMC_DISPLAY_TYPE;
 	cmd[6] = (cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + cmd[5]) & 0xff;
 	MDB_Send(cmd, 7);
-	while (!MDBReceiveComplete){
+	while (!MDBReceiveComplete)
+	{
 		MDB_read();
 	}
-	//uint8_t * buff[6];
-	//sprintf(buff, "%d\r\n", MDB_BUFFER_COUNT);
-	//EXT_UART_Transmit(buff);
-	//for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
-	//sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
-	//EXT_UART_Transmit(buff);
-	//}
-	//sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
-	//EXT_UART_Transmit(buff);
-	//EXT_CRLF();
+	// uint8_t * buff[6];
+	// sprintf(buff, "%d\r\n", MDB_BUFFER_COUNT);
+	// EXT_UART_Transmit(buff);
+	// for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
+	// sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
+	// EXT_UART_Transmit(buff);
+	// }
+	// sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
+	// EXT_UART_Transmit(buff);
+	// EXT_CRLF();
 	if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
 	{
 		if (MDB_BUFFER_COUNT > 1)
@@ -61,31 +62,32 @@ void CashlessDeviceSetup(uint8_t index)
 			ProcessReaderConfig(index, 0);
 			if (ReaderIDData[index].Monetary32bitSupported || ReaderIDData[index].MultiCurrencySupported)
 			{
-				
 			}
 		}
 		if (MDB_BUFFER_COUNT == 1)
 		{
-			sprintf(tmpstr,"CD%d*CONFIG*", index + 1);
+			sprintf(tmpstr, "CD%d*CONFIG*", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			if (MDB_BUFFER[0].data == 0x00 && MDB_BUFFER[0].mode)
 			{
 				EXT_UART_OK();
-			} else
+			}
+			else
 			{
 				EXT_UART_NAK();
 			}
-			//return;
+			// return;
 		}
-	} else
+	}
+	else
 	{
-		sprintf(tmpstr,"CD%d*CONFIG*", index + 1);
+		sprintf(tmpstr, "CD%d*CONFIG*", index + 1);
 		EXT_UART_Transmit(tmpstr);
 		EXT_UART_FAIL();
 		CDLED_OFF(index);
 	}
-	//ProcessReaderConfig();
-	//ReaderProcessResponse(index, "CONFIG");
+	// ProcessReaderConfig();
+	// ReaderProcessResponse(index, "CONFIG");
 }
 
 void CashlessDeviceSetupPrices16bit(uint8_t index)
@@ -100,7 +102,8 @@ void CashlessDeviceSetupPrices16bit(uint8_t index)
 	cmd[5] = ReaderOptions[index].MinPrice.Bytes[1];
 	cmd[6] = (cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + cmd[5]) & 0xff;
 	MDB_Send(cmd, 7);
-	while (!MDBReceiveComplete){
+	while (!MDBReceiveComplete)
+	{
 		MDB_read();
 	}
 	if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
@@ -108,19 +111,21 @@ void CashlessDeviceSetupPrices16bit(uint8_t index)
 		CDLED_ON(index);
 		if (MDB_BUFFER_COUNT == 1)
 		{
-			sprintf(tmpstr,"CD%d*CFGPRICE1*", index + 1);
+			sprintf(tmpstr, "CD%d*CFGPRICE1*", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			if (MDB_BUFFER[0].data == 0x00 && MDB_BUFFER[0].mode)
 			{
 				EXT_UART_OK();
-			} else
+			}
+			else
 			{
 				EXT_UART_NAK();
 			}
 		}
-	} else
+	}
+	else
 	{
-		sprintf(tmpstr,"CD%d*CFGPRICE1*", index + 1);
+		sprintf(tmpstr, "CD%d*CFGPRICE1*", index + 1);
 		EXT_UART_Transmit(tmpstr);
 		EXT_UART_FAIL();
 		CDLED_OFF(index);
@@ -134,7 +139,8 @@ void CashlessDeviceSetupPrices32bit(uint8_t index)
 	if (!index)
 	{
 		cmd[0] = 0x11;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x61;
 	}
@@ -151,7 +157,8 @@ void CashlessDeviceSetupPrices32bit(uint8_t index)
 	cmd[9] = ReaderOptions[index].CountryOrCurrencyCode[1];
 	cmd[12] = (cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + cmd[5] + cmd[6] + cmd[7] + cmd[8] + cmd[9] + cmd[10] + cmd[11]) & 0xff;
 	MDB_Send(cmd, 13);
-	while (!MDBReceiveComplete){
+	while (!MDBReceiveComplete)
+	{
 		MDB_read();
 	}
 	if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
@@ -159,19 +166,21 @@ void CashlessDeviceSetupPrices32bit(uint8_t index)
 		CDLED_ON(index);
 		if (MDB_BUFFER_COUNT == 1)
 		{
-			sprintf(tmpstr,"CD%d*CFGPRICE2*", index + 1);
+			sprintf(tmpstr, "CD%d*CFGPRICE2*", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			if (MDB_BUFFER[0].data == 0x00 && MDB_BUFFER[0].mode)
 			{
 				EXT_UART_OK();
-			} else
+			}
+			else
 			{
 				EXT_UART_NAK();
 			}
 		}
-	} else
+	}
+	else
 	{
-		sprintf(tmpstr,"CD%d*CFGPRICE2*", index + 1);
+		sprintf(tmpstr, "CD%d*CFGPRICE2*", index + 1);
 		EXT_UART_Transmit(tmpstr);
 		EXT_UART_FAIL();
 		CDLED_OFF(index);
@@ -207,7 +216,8 @@ void CashlessDeviceRequestExpansionID(uint8_t index)
 	}
 	cmd[31] = mdbsum & 0xff;
 	MDB_Send(cmd, 32);
-	while (!MDBReceiveComplete){
+	while (!MDBReceiveComplete)
+	{
 		MDB_read();
 	}
 	if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
@@ -217,24 +227,25 @@ void CashlessDeviceRequestExpansionID(uint8_t index)
 			MDB_ACK();
 			CDLED_ON(index);
 			ProcessReaderExpID(index, 0);
-			//return;
-			
+			// return;
 		}
 		if (MDB_BUFFER_COUNT == 1)
 		{
-			sprintf(tmpstr,"CD%d*EXPIDREQ*", index + 1);
+			sprintf(tmpstr, "CD%d*EXPIDREQ*", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			if (MDB_BUFFER[0].data == 0x00 && MDB_BUFFER[0].mode)
 			{
 				EXT_UART_OK();
-			} else
+			}
+			else
 			{
 				EXT_UART_NAK();
 			}
 		}
-	} else
+	}
+	else
 	{
-		sprintf(tmpstr,"CD%d*EXPIDREQ*", index + 1);
+		sprintf(tmpstr, "CD%d*EXPIDREQ*", index + 1);
 		EXT_UART_Transmit(tmpstr);
 		EXT_UART_FAIL();
 		CDLED_OFF(index);
@@ -252,13 +263,14 @@ void CashlessDeviceEnableOptFetures(uint8_t index)
 		cmd[2] = 0x00;
 		cmd[3] = 0x00;
 		cmd[4] = 0x00;
-		//Enable all supported features
+		// Enable all supported features
 		cmd[5] = 0x00 | ((((ReaderIDData[index].FTLSupported & ReaderOptions[index].ReaderOptFeatures.FTLEnabled) == 1) << 0) | (((ReaderIDData[index].Monetary32bitSupported & ReaderOptions[index].ReaderOptFeatures.MonetaryFormat32bitEnabled) == 1) << 1) | (((ReaderIDData[index].MultiCurrencySupported & ReaderOptions[index].ReaderOptFeatures.MultiCurrEnabled) == 1) << 2) |
-		 (((ReaderIDData[index].NVendSupported & ReaderOptions[index].ReaderOptFeatures.NegVendEnabled) == 1) << 3) | (((ReaderIDData[index].DataEntrySupported & ReaderOptions[index].ReaderOptFeatures.DataEntryEnabled) == 1) << 4) | (((ReaderIDData[index].AlwaysIdleSupported & ReaderOptions[index].ReaderOptFeatures.AlwaysIdleEnabled) == 1) << 5));
-		//cmd[5] = 0x38;
+						 (((ReaderIDData[index].NVendSupported & ReaderOptions[index].ReaderOptFeatures.NegVendEnabled) == 1) << 3) | (((ReaderIDData[index].DataEntrySupported & ReaderOptions[index].ReaderOptFeatures.DataEntryEnabled) == 1) << 4) | (((ReaderIDData[index].AlwaysIdleSupported & ReaderOptions[index].ReaderOptFeatures.AlwaysIdleEnabled) == 1) << 5));
+		// cmd[5] = 0x38;
 		cmd[6] = (cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + cmd[5]) & 0xff;
 		MDB_Send(cmd, 7);
-		while (!MDBReceiveComplete){
+		while (!MDBReceiveComplete)
+		{
 			MDB_read();
 		}
 		if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
@@ -266,26 +278,29 @@ void CashlessDeviceEnableOptFetures(uint8_t index)
 			CDLED_ON(index);
 			if (MDB_BUFFER_COUNT == 1)
 			{
-				sprintf(tmpstr,"CD%d*ENFEAT*", index + 1);
+				sprintf(tmpstr, "CD%d*ENFEAT*", index + 1);
 				EXT_UART_Transmit(tmpstr);
 				if (MDB_BUFFER[0].data == 0x00 && MDB_BUFFER[0].mode)
 				{
 					EXT_UART_OK();
-				} else
+				}
+				else
 				{
 					EXT_UART_NAK();
 				}
 			}
-		} else
+		}
+		else
 		{
-			sprintf(tmpstr,"CD%d*ENFEAT*", index + 1);
+			sprintf(tmpstr, "CD%d*ENFEAT*", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_UART_FAIL();
 		}
-	} else
+	}
+	else
 	{
 		uint8_t tmpstr[32];
-		sprintf(tmpstr,"CD%d*ENFEAT*FL_LOW", index + 1);
+		sprintf(tmpstr, "CD%d*ENFEAT*FL_LOW", index + 1);
 		EXT_UART_Transmit(tmpstr);
 		EXT_CRLF();
 		CDLED_OFF(index);
@@ -294,32 +309,32 @@ void CashlessDeviceEnableOptFetures(uint8_t index)
 
 void ProcessReaderExpID(uint8_t index, uint8_t startindex)
 {
-	//uint8_t * buff[6];
-	//sprintf(buff, "%d\r\n", MDB_BUFFER_COUNT);
-	//EXT_UART_Transmit(buff);
-	//for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
-	//sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
-	//EXT_UART_Transmit(buff);
-	//}
-	//sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
-	//EXT_UART_Transmit(buff);
-	//EXT_CRLF();
-	//return;
+	// uint8_t * buff[6];
+	// sprintf(buff, "%d\r\n", MDB_BUFFER_COUNT);
+	// EXT_UART_Transmit(buff);
+	// for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
+	// sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
+	// EXT_UART_Transmit(buff);
+	// }
+	// sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
+	// EXT_UART_Transmit(buff);
+	// EXT_CRLF();
+	// return;
 	uint8_t tmpstr[32];
 	ReaderIDData[index].ManufacturerCode[0] = 0x00;
 	ReaderIDData[index].SerialNumber[0] = 0x00;
 	ReaderIDData[index].ModelRevision[0] = 0x00;
 	uint8_t tmpmfg[3] = {MDB_BUFFER[1].data, MDB_BUFFER[2].data, MDB_BUFFER[3].data};
 	memcpy(&ReaderIDData[index].ManufacturerCode, &tmpmfg, 3);
-	sprintf(tmpstr,"CD%d*CFG2*", index + 1);
+	sprintf(tmpstr, "CD%d*CFG2*", index + 1);
 	EXT_UART_Transmit(tmpstr);
 	EXT_UART_Transmit(ReaderIDData[index].ManufacturerCode);
 	uint8_t tmpsn[12] = {MDB_BUFFER[4].data, MDB_BUFFER[5].data, MDB_BUFFER[6].data, MDB_BUFFER[7].data, MDB_BUFFER[8].data, MDB_BUFFER[9].data, MDB_BUFFER[10].data, MDB_BUFFER[11].data, MDB_BUFFER[12].data, MDB_BUFFER[13].data, MDB_BUFFER[14].data, MDB_BUFFER[15].data};
-	memcpy(&ReaderIDData[index].SerialNumber,&tmpsn, 12);
+	memcpy(&ReaderIDData[index].SerialNumber, &tmpsn, 12);
 	EXT_UART_Transmit("*");
 	EXT_UART_Transmit(ReaderIDData[index].SerialNumber);
 	uint8_t tmpmr[12] = {MDB_BUFFER[16].data, MDB_BUFFER[17].data, MDB_BUFFER[18].data, MDB_BUFFER[19].data, MDB_BUFFER[20].data, MDB_BUFFER[21].data, MDB_BUFFER[22].data, MDB_BUFFER[23].data, MDB_BUFFER[24].data, MDB_BUFFER[25].data, MDB_BUFFER[26].data, MDB_BUFFER[27].data};
-	memcpy(&ReaderIDData[index].ModelRevision,&tmpmr, 12);
+	memcpy(&ReaderIDData[index].ModelRevision, &tmpmr, 12);
 	EXT_UART_Transmit("*");
 	EXT_UART_Transmit(ReaderIDData[index].ModelRevision);
 	EXT_UART_Transmit("*");
@@ -334,7 +349,7 @@ void ProcessReaderExpID(uint8_t index, uint8_t startindex)
 		ReaderIDData[index].DataEntrySupported = ((MDB_BUFFER[startindex + 33].data & (1 << 4)) != 0);
 		ReaderIDData[index].AlwaysIdleSupported = ((MDB_BUFFER[startindex + 33].data & (1 << 5)) != 0);
 	}
-	sprintf(tmpstr,"%d*%d*%d*%d*%d*%d*%d\r\n", ReaderIDData[index].SoftwareVersion, ReaderIDData[index].FTLSupported, ReaderIDData[index].Monetary32bitSupported, ReaderIDData[index].MultiCurrencySupported, ReaderIDData[index].NVendSupported, ReaderIDData[index].DataEntrySupported, ReaderIDData[index].AlwaysIdleSupported);
+	sprintf(tmpstr, "%d*%d*%d*%d*%d*%d*%d\r\n", ReaderIDData[index].SoftwareVersion, ReaderIDData[index].FTLSupported, ReaderIDData[index].Monetary32bitSupported, ReaderIDData[index].MultiCurrencySupported, ReaderIDData[index].NVendSupported, ReaderIDData[index].DataEntrySupported, ReaderIDData[index].AlwaysIdleSupported);
 	EXT_UART_Transmit(tmpstr);
 }
 
@@ -352,8 +367,8 @@ void ProcessReaderConfig(uint8_t index, uint8_t startindex)
 	ReaderSetupData[index].DisplayAvailable = ((MDB_BUFFER[startindex + 7].data & (1 << 2)) != 0);
 	ReaderSetupData[index].VendCashSaleSupport = ((MDB_BUFFER[startindex + 7].data & (1 << 3)) != 0);
 	uint16_t usercountrycode = BCDByteToInt(ReaderSetupData[index].CountryOrCurrencyCode);
-	sprintf(tmpstr,"CD%d*CFG1*%d*%d*%d*%d*%d*%d*%d*%d*%d", index + 1, ReaderSetupData[index].ReaderFeatureLevel, usercountrycode, ReaderSetupData[index].ScalingFactor, \
-	ReaderSetupData[index].DecimalPlaces, ReaderSetupData[index].MaxResponseTime, ReaderSetupData[index].Refundable, ReaderSetupData[index].Multivend, ReaderSetupData[index].DisplayAvailable, ReaderSetupData[index].VendCashSaleSupport);
+	sprintf(tmpstr, "CD%d*CFG1*%d*%d*%d*%d*%d*%d*%d*%d*%d", index + 1, ReaderSetupData[index].ReaderFeatureLevel, usercountrycode, ReaderSetupData[index].ScalingFactor,
+			ReaderSetupData[index].DecimalPlaces, ReaderSetupData[index].MaxResponseTime, ReaderSetupData[index].Refundable, ReaderSetupData[index].Multivend, ReaderSetupData[index].DisplayAvailable, ReaderSetupData[index].VendCashSaleSupport);
 	EXT_UART_Transmit(tmpstr);
 	EXT_CRLF();
 }
@@ -373,8 +388,8 @@ void ProcessReaderVendApproved(uint8_t index, MDB_Byte vendappdata[])
 		availablefundsdata = vendappdata[1].data << 8;
 		availablefundsdata |= vendappdata[2].data;
 	}
-	dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces),0,ReaderSetupData[index].DecimalPlaces,buff);
-	sprintf(tmpstr,"CD%d*VAPPR*%s", index + 1, buff);
+	dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces), 0, ReaderSetupData[index].DecimalPlaces, buff);
+	sprintf(tmpstr, "CD%d*VAPPR*%s", index + 1, buff);
 	EXT_UART_Transmit(tmpstr);
 	EXT_CRLF();
 }
@@ -387,110 +402,110 @@ void ProcessReaderSessionBegin(uint8_t index, MDB_Byte sbdata[])
 	uint8_t sbsize = sizeof(sbdata);
 	switch (sbsize)
 	{
-		case 34:
+	case 34:
+	{
+		unsigned long availablefundsdata = sbdata[1].data << 24;
+		availablefundsdata |= (sbdata[2].data << 16) | (sbdata[3].data << 8) | (sbdata[4].data);
+		dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces), 0, ReaderSetupData[index].DecimalPlaces, buff);
+		uint8_t paymentmediaid[9];
+		uint8_t paymenttype[16];
+		switch (sbdata[9].data >> 6)
 		{
-			unsigned long availablefundsdata = sbdata[1].data << 24;
-			availablefundsdata |= (sbdata[2].data << 16) | (sbdata[3].data << 8) | (sbdata[4].data);
-			dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces),0,ReaderSetupData[index].DecimalPlaces,buff);
-			uint8_t paymentmediaid[9];
-			uint8_t paymenttype[16];
-			switch (sbdata[9].data >> 6)
-			{
-				case 0:
-				sprintf(paymenttype,"%s","NORMAL");
-				break;
-				case 1:
-				sprintf(paymenttype,"%s","TEST");
-				break;
-				case 2:
-				sprintf(paymenttype,"%s","FREE");
-				break;
-				default:
-				switch (sbdata[9].data & 0x3f)
-				{
-					case 0:
-					sprintf(paymenttype,"%s","VMCDP");
-					break;
-					case 1:
-					sprintf(paymenttype,"UG%d*PLN%d", sbdata[10].data, sbdata[11].data);
-					break;
-					case 2:
-					sprintf(paymenttype,"UG%d*DGI%d", sbdata[10].data, sbdata[11].data);
-					break;
-					case 3:
-					sprintf(paymenttype,"DISCP%d", sbdata[11].data);
-					break;
-					case 4:
-					sprintf(paymenttype,"SURCP%d", sbdata[11].data);
-					break;
-				}
-				break;
-			}
-			sprintf(paymentmediaid,"%02x%02x%02x%02x",sbdata[5].data,sbdata[6].data,sbdata[7].data,sbdata[8].data);
-			uint8_t userlanguage[2] = {sbdata[12].data,sbdata[13].data};
-			uint8_t usercountrycodedata[2] = {sbdata[14].data,sbdata[15].data};
-			uint16_t usercountrycode = BCDByteToInt(usercountrycodedata);
-			sprintf(tmpstr,"CD%d*SBEGIN*%s*%s*%s*%s*%d*%d*%d*%d", index + 1, buff, paymentmediaid, paymenttype, \
-			userlanguage, usercountrycode, ((sbdata[16].data & (1 << 0)) == 0), ((sbdata[16].data & (1 << 1)) != 0), ((sbdata[16].data & (1 << 2)) != 0));
-			EXT_UART_Transmit(tmpstr);
-			EXT_CRLF();
-		}
-		break;
-		case 10:
-		{
-			availablefundsdata = sbdata[1].data << 8;
-			availablefundsdata |= sbdata[2].data;
-			dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces),0,ReaderSetupData[index].DecimalPlaces,buff);
-			uint8_t paymentmediaid[9];
-			uint8_t paymenttype[16];
-			switch (sbdata[7].data >> 6)
-			{
-				case 0:
-				sprintf(paymenttype,"%s","NORMAL");
-				break;
-				case 1:
-				sprintf(paymenttype,"%s","TEST");
-				break;
-				case 2:
-				sprintf(paymenttype,"%s","FREE");
-				break;
-				default:
-				switch (sbdata[7].data & 0x3f)
-				{
-					case 0:
-					sprintf(paymenttype,"%s","VMCDP");
-					break;
-					case 1:
-					sprintf(paymenttype,"UG%d*PLN%d", sbdata[8].data, sbdata[9].data);
-					break;
-					case 2:
-					sprintf(paymenttype,"UG%d*DGI%d", sbdata[8].data, sbdata[9].data);
-					break;
-					case 3:
-					sprintf(paymenttype,"DISCP%d", sbdata[9].data);
-					break;
-					case 4:
-					sprintf(paymenttype,"SURCP%d", sbdata[9].data);
-					break;
-				}
-				break;
-			}
-			sprintf(paymentmediaid,"%02x%02x%02x%02x",sbdata[3].data,sbdata[4].data,sbdata[5].data,sbdata[6].data);
-			sprintf(tmpstr,"CD%d*SBEGIN*%s*%s*%s", index + 1, buff, paymentmediaid, paymenttype);
-			EXT_UART_Transmit(tmpstr);
-		}
-		break;
-		case 6:
-		{
-			availablefundsdata = sbdata[1].data << 8;
-			availablefundsdata |= sbdata[2].data;
-			dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces),0,ReaderSetupData[index].DecimalPlaces,buff);
-			sprintf(tmpstr,"CD%d*SBEGIN*%s", index + 1, buff);
-			EXT_UART_Transmit(tmpstr);
-			EXT_CRLF();
-		}
-		break;
+		case 0:
+			sprintf(paymenttype, "%s", "NORMAL");
+			break;
+		case 1:
+			sprintf(paymenttype, "%s", "TEST");
+			break;
+		case 2:
+			sprintf(paymenttype, "%s", "FREE");
+			break;
 		default:
+			switch (sbdata[9].data & 0x3f)
+			{
+			case 0:
+				sprintf(paymenttype, "%s", "VMCDP");
+				break;
+			case 1:
+				sprintf(paymenttype, "UG%d*PLN%d", sbdata[10].data, sbdata[11].data);
+				break;
+			case 2:
+				sprintf(paymenttype, "UG%d*DGI%d", sbdata[10].data, sbdata[11].data);
+				break;
+			case 3:
+				sprintf(paymenttype, "DISCP%d", sbdata[11].data);
+				break;
+			case 4:
+				sprintf(paymenttype, "SURCP%d", sbdata[11].data);
+				break;
+			}
+			break;
+		}
+		sprintf(paymentmediaid, "%02x%02x%02x%02x", sbdata[5].data, sbdata[6].data, sbdata[7].data, sbdata[8].data);
+		uint8_t userlanguage[2] = {sbdata[12].data, sbdata[13].data};
+		uint8_t usercountrycodedata[2] = {sbdata[14].data, sbdata[15].data};
+		uint16_t usercountrycode = BCDByteToInt(usercountrycodedata);
+		sprintf(tmpstr, "CD%d*SBEGIN*%s*%s*%s*%s*%d*%d*%d*%d", index + 1, buff, paymentmediaid, paymenttype,
+				userlanguage, usercountrycode, ((sbdata[16].data & (1 << 0)) == 0), ((sbdata[16].data & (1 << 1)) != 0), ((sbdata[16].data & (1 << 2)) != 0));
+		EXT_UART_Transmit(tmpstr);
+		EXT_CRLF();
+	}
+	break;
+	case 10:
+	{
+		availablefundsdata = sbdata[1].data << 8;
+		availablefundsdata |= sbdata[2].data;
+		dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces), 0, ReaderSetupData[index].DecimalPlaces, buff);
+		uint8_t paymentmediaid[9];
+		uint8_t paymenttype[16];
+		switch (sbdata[7].data >> 6)
+		{
+		case 0:
+			sprintf(paymenttype, "%s", "NORMAL");
+			break;
+		case 1:
+			sprintf(paymenttype, "%s", "TEST");
+			break;
+		case 2:
+			sprintf(paymenttype, "%s", "FREE");
+			break;
+		default:
+			switch (sbdata[7].data & 0x3f)
+			{
+			case 0:
+				sprintf(paymenttype, "%s", "VMCDP");
+				break;
+			case 1:
+				sprintf(paymenttype, "UG%d*PLN%d", sbdata[8].data, sbdata[9].data);
+				break;
+			case 2:
+				sprintf(paymenttype, "UG%d*DGI%d", sbdata[8].data, sbdata[9].data);
+				break;
+			case 3:
+				sprintf(paymenttype, "DISCP%d", sbdata[9].data);
+				break;
+			case 4:
+				sprintf(paymenttype, "SURCP%d", sbdata[9].data);
+				break;
+			}
+			break;
+		}
+		sprintf(paymentmediaid, "%02x%02x%02x%02x", sbdata[3].data, sbdata[4].data, sbdata[5].data, sbdata[6].data);
+		sprintf(tmpstr, "CD%d*SBEGIN*%s*%s*%s", index + 1, buff, paymentmediaid, paymenttype);
+		EXT_UART_Transmit(tmpstr);
+	}
+	break;
+	case 6:
+	{
+		availablefundsdata = sbdata[1].data << 8;
+		availablefundsdata |= sbdata[2].data;
+		dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces), 0, ReaderSetupData[index].DecimalPlaces, buff);
+		sprintf(tmpstr, "CD%d*SBEGIN*%s", index + 1, buff);
+		EXT_UART_Transmit(tmpstr);
+		EXT_CRLF();
+	}
+	break;
+	default:
 		break;
 	}
 }
@@ -501,50 +516,50 @@ void ProcessReaderError(uint8_t index, MDB_Byte errdata[])
 	uint8_t error[8];
 	switch (errdata[1].data >> 4)
 	{
-		case 0:
-		sprintf(error,"%s", "PMERR");
+	case 0:
+		sprintf(error, "%s", "PMERR");
 		break;
-		case 1:
-		sprintf(error,"%s", "IPM");
+	case 1:
+		sprintf(error, "%s", "IPM");
 		break;
-		case 2:
-		sprintf(error,"%s", "TAMP");
+	case 2:
+		sprintf(error, "%s", "TAMP");
 		break;
-		case 3:
-		sprintf(error,"%s", "MERR1");
+	case 3:
+		sprintf(error, "%s", "MERR1");
 		break;
-		case 4:
-		sprintf(error,"%s", "COMERR");
+	case 4:
+		sprintf(error, "%s", "COMERR");
 		break;
-		case 5:
-		sprintf(error,"%s", "SERV");
+	case 5:
+		sprintf(error, "%s", "SERV");
 		break;
-		case 6:
-		sprintf(error,"%s", "6");
+	case 6:
+		sprintf(error, "%s", "6");
 		break;
-		case 7:
-		sprintf(error,"%s", "MERR2");
+	case 7:
+		sprintf(error, "%s", "MERR2");
 		break;
-		case 8:
-		sprintf(error,"%s", "RFAIL");
+	case 8:
+		sprintf(error, "%s", "RFAIL");
 		break;
-		case 9:
-		sprintf(error,"%s", "COMERR2");
+	case 9:
+		sprintf(error, "%s", "COMERR2");
 		break;
-		case 10:
-		sprintf(error,"%s", "PMJAM");
+	case 10:
+		sprintf(error, "%s", "PMJAM");
 		break;
-		case 11:
-		sprintf(error,"%s", "MERR3");
+	case 11:
+		sprintf(error, "%s", "MERR3");
 		break;
-		case 12:
-		sprintf(error,"%s", "REFERR");
+	case 12:
+		sprintf(error, "%s", "REFERR");
 		break;
-		default:
-		sprintf(error,"%s", "UNASGND");
+	default:
+		sprintf(error, "%s", "UNASGND");
 		break;
 	}
-	sprintf(tmpstr,"CD%d*ERROR*%s*%d", index + 1, error, errdata[1].data & 0x0f);
+	sprintf(tmpstr, "CD%d*ERROR*%s*%d", index + 1, error, errdata[1].data & 0x0f);
 	EXT_UART_Transmit(tmpstr);
 	EXT_CRLF();
 }
@@ -552,7 +567,7 @@ void ProcessReaderError(uint8_t index, MDB_Byte errdata[])
 void ReaderReset(uint8_t index)
 {
 	uint8_t addr = (index) ? 0x60 : 0x10;
-	uint8_t cmd[2] = { addr, addr };
+	uint8_t cmd[2] = {addr, addr};
 	MDB_Send(cmd, 2);
 	ReaderProcessResponse(index, "RESET");
 }
@@ -572,8 +587,8 @@ void ProcessReaderRevalueLimit(uint8_t index, MDB_Byte rlimdata[])
 		availablefundsdata = rlimdata[1].data << 8;
 		availablefundsdata |= rlimdata[2].data;
 	}
-	dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces),0,ReaderSetupData[index].DecimalPlaces,buff);
-	sprintf(tmpstr,"CD%d*REVLIMIT*%s", index + 1, buff);
+	dtostrf(availablefundsdata / pow(10, ReaderSetupData[index].DecimalPlaces), 0, ReaderSetupData[index].DecimalPlaces, buff);
+	sprintf(tmpstr, "CD%d*REVLIMIT*%s", index + 1, buff);
 	EXT_UART_Transmit(tmpstr);
 	EXT_CRLF();
 }
@@ -593,8 +608,8 @@ void ReaderResponse(uint8_t index)
 	{
 		switch (TMP[i].data)
 		{
-			case 0x00:
-			sprintf(tmpstr,"CD%d*JSTRST", index + 1);
+		case 0x00:
+			sprintf(tmpstr, "CD%d*JSTRST", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
 			CashlessDeviceSetup(index);
@@ -602,28 +617,31 @@ void ReaderResponse(uint8_t index)
 			CashlessDeviceRequestExpansionID(index);
 			CashlessDeviceEnableOptFetures(index);
 			return;
-			case 0x01:
-			//memcpy(&tmpsetup[0], &TMP[i], 16);
+		case 0x01:
+			// memcpy(&tmpsetup[0], &TMP[i], 16);
 			ProcessReaderConfig(index, i);
-			if (tmplen > 8) i += 7;
+			if (tmplen > 8)
+				i += 7;
 			break;
-			case 0x02:
+		case 0x02:
 			for (int a = 2; a < 34; a++)
 			{
 				dispbuff[a - 2] = TMP[a].data;
 			}
-			sprintf(tmpstr,"CD%d*DISPREQ*%d*%s", index + 1, TMP[i + 1].data, dispbuff);
+			sprintf(tmpstr, "CD%d*DISPREQ*%d*%s", index + 1, TMP[i + 1].data, dispbuff);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
-			if (tmplen > 2) i++;
+			if (tmplen > 2)
+				i++;
 			return;
-			case 0x03:
+		case 0x03:
 			if (ReaderSetupData[index].ReaderFeatureLevel == 1)
 			{
 				MDB_Byte sbdata[3];
 				memcpy(&sbdata, &TMP[i], 6);
-				ProcessReaderSessionBegin(index,sbdata);
-				if (tmplen > 4) i += 3;
+				ProcessReaderSessionBegin(index, sbdata);
+				if (tmplen > 4)
+					i += 3;
 			}
 			if (ReaderSetupData[index].ReaderFeatureLevel >= 2)
 			{
@@ -632,94 +650,100 @@ void ReaderResponse(uint8_t index)
 				{
 					MDB_Byte sbdata[10];
 					memcpy(&sbdata, &TMP[i], 20);
-					ProcessReaderSessionBegin(index,sbdata);
-					if (tmplen > 10) i += 9;
-				} else
+					ProcessReaderSessionBegin(index, sbdata);
+					if (tmplen > 10)
+						i += 9;
+				}
+				else
 				{
 					MDB_Byte sbdata[17];
 					memcpy(&sbdata, &TMP[i], 34);
-					ProcessReaderSessionBegin(index,sbdata);
-					if (tmplen > 17) i += 16;
+					ProcessReaderSessionBegin(index, sbdata);
+					if (tmplen > 17)
+						i += 16;
 				}
 			}
 			break;
-			case 0x04:
-			sprintf(tmpstr,"CD%d*SCANCREQ", index + 1);
+		case 0x04:
+			sprintf(tmpstr, "CD%d*SCANCREQ", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
 			break;
-			case 0x05:
+		case 0x05:
+		{
+			if ((ReaderSetupData[index].ReaderFeatureLevel == 3) && (ReaderOptions[index].ReaderOptFeatures.MonetaryFormat32bitEnabled || ReaderOptions[index].ReaderOptFeatures.MultiCurrEnabled))
 			{
-				if ((ReaderSetupData[index].ReaderFeatureLevel == 3) && (ReaderOptions[index].ReaderOptFeatures.MonetaryFormat32bitEnabled || ReaderOptions[index].ReaderOptFeatures.MultiCurrEnabled))
-				{
-					MDB_Byte tmpvendappdata[5];
-					memcpy(&tmpvendappdata, &TMP[i], 10);
-					ProcessReaderVendApproved(index,tmpvendappdata);
-					i += 4;
-				} else
-				{
-					MDB_Byte tmpvendappdata[3];
-					memcpy(&tmpvendappdata, &TMP[i], 6);
-					ProcessReaderVendApproved(index,tmpvendappdata);
-					i += 2;
-				}
+				MDB_Byte tmpvendappdata[5];
+				memcpy(&tmpvendappdata, &TMP[i], 10);
+				ProcessReaderVendApproved(index, tmpvendappdata);
+				i += 4;
 			}
-			break;
-			case 0x06:
+			else
 			{
-				//uint8_t * buff[6];
-				//sprintf(buff, "%d\r\n", MDB_BUFFER_COUNT);
-				//EXT_UART_Transmit(buff);
-				//for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
-					//sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
-					//EXT_UART_Transmit(buff);
-				//}
-				//sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
-				//EXT_UART_Transmit(buff);
-				//EXT_CRLF();
-				sprintf(tmpstr,"CD%d*VDENY", index + 1);
-				EXT_UART_Transmit(tmpstr);
-				EXT_CRLF();
+				MDB_Byte tmpvendappdata[3];
+				memcpy(&tmpvendappdata, &TMP[i], 6);
+				ProcessReaderVendApproved(index, tmpvendappdata);
+				i += 2;
 			}
-			if (tmplen > 2) i++;
+		}
+		break;
+		case 0x06:
+		{
+			// uint8_t * buff[6];
+			// sprintf(buff, "%d\r\n", MDB_BUFFER_COUNT);
+			// EXT_UART_Transmit(buff);
+			// for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
+			// sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
+			// EXT_UART_Transmit(buff);
+			//}
+			// sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
+			// EXT_UART_Transmit(buff);
+			// EXT_CRLF();
+			sprintf(tmpstr, "CD%d*VDENY", index + 1);
+			EXT_UART_Transmit(tmpstr);
+			EXT_CRLF();
+		}
+			if (tmplen > 2)
+				i++;
 			break;
-			case 0x07:
-			sprintf(tmpstr,"CD%d*SEND", index + 1);
+		case 0x07:
+			sprintf(tmpstr, "CD%d*SEND", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
 			break;
-			case 0x08:
-			sprintf(tmpstr,"CD%d*CNCLD", index + 1);
+		case 0x08:
+			sprintf(tmpstr, "CD%d*CNCLD", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
 			break;
-			case 0x09:
+		case 0x09:
 			if (VMCData.VMC_FEATURE_LEVEL == 3)
 			{
 				memcpy(&tmpidlevel3, &TMP[i], 68);
 				ProcessReaderExpID(index, tmpidlevel3);
 				i += 33;
-			} else
+			}
+			else
 			{
 				memcpy(&tmpidlevel12, &TMP[i], 60);
 				ProcessReaderExpID(index, tmpidlevel12);
 				i += 29;
 			}
 			break;
-			case 0x0a:
-			{
-				MDB_Byte errdata[2];
-				memcpy(&errdata, &TMP[i], 4);
-				ProcessReaderError(index,errdata);
-				i ++;
-			}
-			break;
-			case 0x0b:
-			sprintf(tmpstr,"CD%d*COOS", index + 1);
+		case 0x0a:
+		{
+			MDB_Byte errdata[2];
+			memcpy(&errdata, &TMP[i], 4);
+			ProcessReaderError(index, errdata);
+			i++;
+		}
+		break;
+		case 0x0b:
+			sprintf(tmpstr, "CD%d*COOS", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			if (ReaderSetupData[index].ReaderFeatureLevel >= 2)
 			{
-				sprintf(tmpstr,"*%d", TMP[i + 1].data);
+				sprintf(tmpstr, "*%d", TMP[i + 1].data);
 				EXT_UART_Transmit(tmpstr);
 				CashlessDevice[index].Status = TMP[i + 1].data;
 				i++;
@@ -727,53 +751,53 @@ void ReaderResponse(uint8_t index)
 			EXT_CRLF();
 			ReaderReset(index);
 			return;
-			case 0x0d:
-			sprintf(tmpstr,"CD%d*REVAPP", index + 1);
+		case 0x0d:
+			sprintf(tmpstr, "CD%d*REVAPP", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			break;
-			case 0x0e:
-			sprintf(tmpstr,"CD%d*REVDENY", index + 1);
+		case 0x0e:
+			sprintf(tmpstr, "CD%d*REVDENY", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
 			break;
-			case 0x0f:
+		case 0x0f:
+		{
+			if ((ReaderSetupData[index].ReaderFeatureLevel == 3) && (ReaderOptions[index].ReaderOptFeatures.MonetaryFormat32bitEnabled || ReaderOptions[index].ReaderOptFeatures.MultiCurrEnabled))
 			{
-				if ((ReaderSetupData[index].ReaderFeatureLevel == 3) && (ReaderOptions[index].ReaderOptFeatures.MonetaryFormat32bitEnabled || ReaderOptions[index].ReaderOptFeatures.MultiCurrEnabled))
-				{
-					MDB_Byte rlimdata[5];
-					memcpy(&rlimdata, &TMP[i], 10);
-					ProcessReaderRevalueLimit(index,rlimdata);
-					i += 4;
-					
-				} else
-				{
-					MDB_Byte rlimdata[3];
-					memcpy(&rlimdata, &TMP[i], 6);
-					ProcessReaderRevalueLimit(index,rlimdata);
-					i += 2;
-				}
+				MDB_Byte rlimdata[5];
+				memcpy(&rlimdata, &TMP[i], 10);
+				ProcessReaderRevalueLimit(index, rlimdata);
+				i += 4;
 			}
-			break;
-			case 0x11:
-			sprintf(tmpstr,"CD%d*DTR", index + 1);
+			else
+			{
+				MDB_Byte rlimdata[3];
+				memcpy(&rlimdata, &TMP[i], 6);
+				ProcessReaderRevalueLimit(index, rlimdata);
+				i += 2;
+			}
+		}
+		break;
+		case 0x11:
+			sprintf(tmpstr, "CD%d*DTR", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
-			//TODO:The VMC will follow with the EXPANSION-WRITE
-			//TIME/DATE FILE to the card reader. Refer to paragraph 7.4.19.
+			// TODO:The VMC will follow with the EXPANSION-WRITE
+			// TIME/DATE FILE to the card reader. Refer to paragraph 7.4.19.
 			break;
-			case 0x12:
-			sprintf(tmpstr,"CD%d*DER*%d*%d", index + 1, TMP[i + 1].data >> 7, TMP[i + 1].data & 0x7f);
+		case 0x12:
+			sprintf(tmpstr, "CD%d*DER*%d*%d", index + 1, TMP[i + 1].data >> 7, TMP[i + 1].data & 0x7f);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
 			i++;
 			break;
-			case 0x13:
-			sprintf(tmpstr,"CD%d*DECNCL", index + 1);
+		case 0x13:
+			sprintf(tmpstr, "CD%d*DECNCL", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
-			//The user has pushed the reader�s RETURN button before completing the
-			//DATA ENTRY. The VMC should terminate all DATA ENTRY activity in
-			//progress.
+			// The user has pushed the reader�s RETURN button before completing the
+			// DATA ENTRY. The VMC should terminate all DATA ENTRY activity in
+			// progress.
 			break;
 		}
 	}
@@ -786,7 +810,8 @@ void ReaderDataEntryResponse(uint8_t index, uint8_t Keys[8])
 	if (!index)
 	{
 		cmd[0] = 0x14;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x64;
 	}
@@ -820,7 +845,8 @@ void ReaderVendRequest(uint8_t index, double price, uint16_t itemnumber)
 		cmd[7] = itemnumber & 0xff;
 		cmd[8] = (cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + cmd[5] + cmd[6] + cmd[7]) & 0xff;
 		MDB_Send(cmd, 9);
-	} else
+	}
+	else
 	{
 		uint8_t cmd[7];
 		cmd[0] = (index) ? 0x63 : 0x13;
@@ -843,22 +869,22 @@ void ReaderVendCancel(uint8_t index)
 	cmd[2] = (cmd[0] + cmd[1]) & 0xff;
 	MDB_Send(cmd, 3);
 	ReaderProcessResponse(index, "VENDCANCEL");
-	//while (!MDBReceiveComplete){
-		//MDB_read();
+	// while (!MDBReceiveComplete){
+	// MDB_read();
 	//}
-	//if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
+	// if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
 	//{
-		//if (MDB_BUFFER[0].data == 0x06)
-		//{
-			//MDB_ACK();
-			//sprintf(tmpstr,"CD%d*VENDCANCEL*OK\r\n", index + 1);
-			//EXT_UART_Transmit(tmpstr);
-			//return;
-		//}
-	//} 
-	//sprintf(tmpstr,"CD%d*VENDCANCEL*", index + 1);
-	//EXT_UART_Transmit(tmpstr);
-	//EXT_UART_FAIL();
+	// if (MDB_BUFFER[0].data == 0x06)
+	//{
+	// MDB_ACK();
+	// sprintf(tmpstr,"CD%d*VENDCANCEL*OK\r\n", index + 1);
+	// EXT_UART_Transmit(tmpstr);
+	// return;
+	//}
+	//}
+	// sprintf(tmpstr,"CD%d*VENDCANCEL*", index + 1);
+	// EXT_UART_Transmit(tmpstr);
+	// EXT_UART_FAIL();
 }
 
 void ReaderVendSuccess(uint8_t index, uint16_t itemnumber)
@@ -871,16 +897,18 @@ void ReaderVendSuccess(uint8_t index, uint16_t itemnumber)
 	cmd[3] = itemnumber & 0xff;
 	cmd[4] = (cmd[0] + cmd[1] + cmd[2] + cmd[3]) & 0xff;
 	MDB_Send(cmd, 5);
-	while (!MDBReceiveComplete){
+	while (!MDBReceiveComplete)
+	{
 		MDB_read();
 	}
 	if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
 	{
-			sprintf(tmpstr,"CD%d*VENDSUCCESS*OK\r\n", index + 1);
-			EXT_UART_Transmit(tmpstr);
-	} else
+		sprintf(tmpstr, "CD%d*VENDSUCCESS*OK\r\n", index + 1);
+		EXT_UART_Transmit(tmpstr);
+	}
+	else
 	{
-		sprintf(tmpstr,"CD%d*VENDSUCCESS*", index + 1);
+		sprintf(tmpstr, "CD%d*VENDSUCCESS*", index + 1);
 		EXT_UART_Transmit(tmpstr);
 		EXT_UART_FAIL();
 	}
@@ -894,7 +922,8 @@ void ReaderVendFailure(uint8_t index)
 	if (!index)
 	{
 		cmd[0] = 0x13;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x63;
 	}
@@ -912,7 +941,8 @@ void ReaderSessionComplete(uint8_t index)
 	if (!index)
 	{
 		cmd[0] = 0x13;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x63;
 	}
@@ -930,7 +960,8 @@ void ReaderCashSale(uint8_t index, double price, uint16_t itemnumber)
 	if (!index)
 	{
 		cmd[0] = 0x13;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x63;
 	}
@@ -952,7 +983,8 @@ void ReaderCashSaleExp(uint8_t index, double price, uint16_t itemnumber, uint8_t
 	if (!index)
 	{
 		cmd[0] = 0x13;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x63;
 	}
@@ -978,7 +1010,8 @@ void ReaderNegativeVend(uint8_t index, double price, uint16_t itemnumber)
 	if (!index)
 	{
 		cmd[0] = 0x13;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x63;
 	}
@@ -1000,7 +1033,8 @@ void ReaderNegativeVendExp(uint8_t index, double price, uint16_t itemnumber)
 	if (!index)
 	{
 		cmd[0] = 0x13;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x63;
 	}
@@ -1023,11 +1057,12 @@ void ReaderEDC(uint8_t index, uint8_t action)
 	if (!index)
 	{
 		cmd[0] = 0x14;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x64;
 	}
-	cmd[1] = action;//0x00 = Disable; 0x01 = Enable; 0x02 = Cancel
+	cmd[1] = action; // 0x00 = Disable; 0x01 = Enable; 0x02 = Cancel
 	cmd[2] = (cmd[0] + cmd[1]) & 0xff;
 	MDB_Send(cmd, 3);
 	ReaderProcessResponse(index, "EDC");
@@ -1041,7 +1076,8 @@ void ReaderRevalueRequest(uint8_t index, double amount)
 	if (!index)
 	{
 		cmd[0] = 0x15;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x65;
 	}
@@ -1061,7 +1097,8 @@ void ReaderRevalueRequestExp(uint8_t index, double amount)
 	if (!index)
 	{
 		cmd[0] = 0x15;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x65;
 	}
@@ -1082,7 +1119,8 @@ void ReaderRevalueLimitRequest(uint8_t index)
 	if (!index)
 	{
 		cmd[0] = 0x15;
-	} else
+	}
+	else
 	{
 		cmd[0] = 0x65;
 	}
@@ -1106,48 +1144,51 @@ void ReaderWriteDateTime(uint8_t index, uint8_t BCDDateTimeData[10])
 void ReaderProcessResponse(uint8_t index, uint8_t resp[])
 {
 	uint8_t tmpstr[32];
-	uint8_t * buff[6];
-	while (!MDBReceiveComplete){
+	uint8_t *buff[6];
+	while (!MDBReceiveComplete)
+	{
 		MDB_read();
 	}
-	//return;
+	// return;
 	if ((MDBReceiveComplete) && (!MDBReceiveErrorFlag))
 	{
 		if (MDB_BUFFER_COUNT > 1)
 		{
 			MDB_ACK();
-			//for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
-			//sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
-			//EXT_UART_Transmit(buff);
-			//}
-			//sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
-			//EXT_UART_Transmit(buff);
-			//EXT_CRLF();
-			//return;
+			// for (int a = 0; a < MDB_BUFFER_COUNT - 1; a++){
+			// sprintf(&buff, "%02x ", MDB_BUFFER[a].data);
+			// EXT_UART_Transmit(buff);
+			// }
+			// sprintf(&buff, "%02x ", MDB_BUFFER[MDB_BUFFER_COUNT - 1].data);
+			// EXT_UART_Transmit(buff);
+			// EXT_CRLF();
+			// return;
 			ReaderResponse(index);
-			//return;
+			// return;
 		}
 		CDLED_ON(index);
 		if (MDB_BUFFER_COUNT == 1)
 		{
 			if (strlen(resp) > 1)
 			{
-				sprintf(tmpstr,"CD%d*%s*", index + 1, resp);
+				sprintf(tmpstr, "CD%d*%s*", index + 1, resp);
 				EXT_UART_Transmit(tmpstr);
 				if (MDB_BUFFER[0].data == 0x00 && MDB_BUFFER[0].mode)
 				{
 					EXT_UART_OK();
-				} else
+				}
+				else
 				{
 					EXT_UART_NAK();
 				}
 			}
 		}
-	} else
+	}
+	else
 	{
 		if (resp[0] != 0x00)
 		{
-			sprintf(tmpstr,"CD%d*%s*", index + 1, resp);
+			sprintf(tmpstr, "CD%d*%s*", index + 1, resp);
 			EXT_UART_Transmit(tmpstr);
 			EXT_UART_FAIL();
 			CDLED_OFF(index);
