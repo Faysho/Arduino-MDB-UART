@@ -4,7 +4,7 @@
  * Created: 18.05.2019 10:07:59
  *  Author: root
  */ 
-#define F_CPU 16000000UL // Clock Speed
+#define F_CPU 12000000UL // Clock Speed
 #define BAUD 9600
 #define MYUBRR F_CPU/16/BAUD-1
 
@@ -771,7 +771,7 @@ void ReaderResponse(uint8_t index)
 			sprintf(tmpstr,"CD%d*DECNCL", index + 1);
 			EXT_UART_Transmit(tmpstr);
 			EXT_CRLF();
-			//The user has pushed the reader’s RETURN button before completing the
+			//The user has pushed the readerï¿½s RETURN button before completing the
 			//DATA ENTRY. The VMC should terminate all DATA ENTRY activity in
 			//progress.
 			break;

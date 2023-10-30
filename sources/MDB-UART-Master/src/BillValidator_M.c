@@ -4,7 +4,7 @@
  * Created: 18.05.2019 10:05:37
  *  Author: root
  */ 
-#define F_CPU 16000000UL // Clock Speed
+#define F_CPU 12000000UL // Clock Speed
 #define BAUD 9600
 #define MYUBRR F_CPU/16/BAUD-1
 
@@ -344,7 +344,7 @@ void BillValidatorRecyclerEnable()
 	for (int i = 4; i < 20; i++)
 	{
 		cmd[i] = ((BillValidatorOptions.EnableRecycleBillsBits >> (i - 4)) & 1 == 1) ? 0x03 : 0x00;
-		//Use all possible bills (this is the recommended setting –
+		//Use all possible bills (this is the recommended setting ï¿½
 		//the recycler will use its internal setting to determine what bill
 		//are put into the recycler)
 	}
@@ -384,7 +384,7 @@ void BillValidatorRecyclerDisable()
 	for (int i = 4; i < 20; i++)
 	{
 		cmd[i] = 0x00;
-		//Use all possible bills (this is the recommended setting –
+		//Use all possible bills (this is the recommended setting ï¿½
 		//the recycler will use its internal setting to determine what bill
 		//are put into the recycler)
 	}

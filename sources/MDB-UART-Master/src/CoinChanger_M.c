@@ -4,7 +4,7 @@
  * Created: 18.05.2019 09:58:48
  *  Author: root
  */ 
-#define F_CPU 16000000UL // Clock Speed
+#define F_CPU 12000000UL // Clock Speed
 #define BAUD 9600
 #define MYUBRR F_CPU/16/BAUD-1
 
@@ -180,10 +180,10 @@ void CoinChangerPollResponse()
 				case 11:
 				sprintf(statusbuff,"%s", "JUSTRESET");
 				//The following initialization sequence is recommended for all new VMCs
-				//designed after July, 2000. It should be used after “power up”, after issuing
+				//designed after July, 2000. It should be used after ï¿½power upï¿½, after issuing
 				//the RESET command, after issuing the Bus Reset (pulling the transmit line
-				//“active” for a minimum of 100 mS), or anytime a POLL command results in a
-				//“JUST RESET” response (i.e., peripheral self resets).
+				//ï¿½activeï¿½ for a minimum of 100 mS), or anytime a POLL command results in a
+				//ï¿½JUST RESETï¿½ response (i.e., peripheral self resets).
 				CoinChangerDevice.Status = 1;
 				CoinChangerDevice.OfflinePollsCount = 5;
 				sprintf(tmpstr,"CC*STATUS*%s\r\n", &statusbuff);
