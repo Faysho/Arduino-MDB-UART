@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "settings_m.h": "c"
+        "settings_m.h": "c",
+        "coinchanger_m.h": "c"
     }
 }

@@ -20,11 +20,11 @@
 void MDB_Setup()
 {
 	// Set 9600-9-N-1 UART mode
-	UBRR0H = (MYUBRR >> 8);
-	UBRR0L = MYUBRR;
-	UCSR0A &= ~(1 << U2X0); // Disable USART rate doubler
-	UCSR0C = (0 << UMSEL01) | (0 << UMSEL00) | (0 << UPM01) | (0 << UPM00) | (0 << USBS0) | (1 << UCSZ01) | (1 << UCSZ00);
-	UCSR0B |= (1 << UCSZ02) | (1 << RXEN0) | (1 << TXEN0); // 9bit
+	UBRR2H = (MYUBRR >> 8);
+	UBRR2L = MYUBRR;
+	UCSR2A &= ~(1 << U2X2); // Disable USART rate doubler
+	UCSR2C = (0 << UMSEL21) | (0 << UMSEL20) | (0 << UPM21) | (0 << UPM20) | (0 << USBS2) | (1 << UCSZ21) | (1 << UCSZ20);
+	UCSR2B |= (1 << UCSZ22) | (1 << RXEN2) | (1 << TXEN2); // 9bit
 }
 
 void EXT_UART_Transmit(uint8_t data[])
@@ -109,7 +109,7 @@ int MDB_Receive()
 	uint8_t resh, resl;
 	int rtr = 0;
 	// Wait for data to be received, 20msec must fit...
-	while ((!(UCSR0A & (1 << RXC0))) && rtr < 20)
+	while ((!(UCSR2A & (1 << RXC2))) && rtr < 20)
 	{
 		delay_1ms(1);
 		rtr++;
@@ -120,8 +120,8 @@ int MDB_Receive()
 		MDBReceiveComplete = 1;
 	}
 	// Get 9th bit, then data from buffer
-	resh = UCSR0B;
-	resl = UDR0;
+	resh = UCSR2B;
+	resl = UDR2;
 	// Filter the 9th bit, then return only data w\o mode bit
 	resh = (resh >> 1) & 0x01;
 	return ((resh << 8) | resl);
@@ -163,26 +163,26 @@ void MDB_Send(uint8_t data[], uint8_t len)
 	MDBReceiveErrorFlag = 0;
 	MDBReceiveComplete = 0;
 	MDB_BUFFER_COUNT = 0;
-	while (!(UCSR0A & (1 << UDRE0)))
+	while (!(UCSR2A & (1 << UDRE2)))
 	{
 	};
-	UCSR0B |= (1 << TXB80);
-	UDR0 = data[0];
+	UCSR2B |= (1 << TXB82);
+	UDR2 = data[0];
 	for (int i = 1; i < len; i++)
 	{
-		while (!(UCSR0A & (1 << UDRE0)))
+		while (!(UCSR2A & (1 << UDRE2)))
 		{
 		};
-		UCSR0B &= ~(1 << TXB80);
-		UDR0 = data[i];
+		UCSR2B &= ~(1 << TXB82);
+		UDR2 = data[i];
 	}
 }
 
 void MDB_ACK()
 {
-	while (!(UCSR0A & (1 << UDRE0)))
+	while (!(UCSR2A & (1 << UDRE2)))
 		;
-	UCSR0B &= ~(1 << TXB80);
-	UDR0 = 0x00; // send ACK to MDB if peripheral answer is not just *ACK*, otherwise peripheral will try to send unconfirmed data with next polls
+	UCSR2B &= ~(1 << TXB82);
+	UDR2 = 0x00; // send ACK to MDB if peripheral answer is not just *ACK*, otherwise peripheral will try to send unconfirmed data with next polls
 				 // MDBDebug();
 }

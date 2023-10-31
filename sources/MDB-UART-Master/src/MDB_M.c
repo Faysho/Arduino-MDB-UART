@@ -149,16 +149,16 @@ void PollReader(uint8_t index)
 	MDBReceiveErrorFlag = 0;
 	MDBReceiveComplete = 0;
 	MDB_BUFFER_COUNT = 0;
-	while (!(UCSR0A & (1 << UDRE0)))
+	while (!(UCSR2A & (1 << UDRE2)))
 	{
 	};
-	UCSR0B |= (1 << TXB80);
-	UDR0 = addr;
-	while (!(UCSR0A & (1 << UDRE0)))
+	UCSR2B |= (1 << TXB82);
+	UDR2 = addr;
+	while (!(UCSR2A & (1 << UDRE2)))
 	{
 	};
-	UCSR0B &= ~(1 << TXB80);
-	UDR0 = addr;
+	UCSR2B &= ~(1 << TXB82);
+	UDR2 = addr;
 	ReaderProcessResponse(index, "");
 }
 
